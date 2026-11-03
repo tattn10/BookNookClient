@@ -1,27 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import type { BookRecord } from "./book-types";
 
 const serverUrl = (
   process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:8000"
 ).replace(/\/+$/, "");
 
-type Book = {
-  _id: string;
-  title: string;
-  author: string;
-  category: string;
-  imageUrl: string;
-  description: string;
-  userName: string;
-  userEmail: string;
-  addedAt: string;
-};
-
 export default function AllBooksPage() {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<BookRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +22,7 @@ export default function AllBooksPage() {
         const response = await fetch(`${serverUrl}/books`, {
           signal: controller.signal,
         });
-        const result = (await response.json()) as Book[] | { error?: string };
+        const result = (await response.json()) as BookRecord[] | { error?: string };
 
         if (!response.ok) {
           throw new Error(
@@ -90,10 +80,10 @@ export default function AllBooksPage() {
           No books have been added yet.
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
           {books.map((book) => (
             <article key={book._id} className="group min-w-0">
-              <div className="relative flex aspect-[0.72] items-center justify-center overflow-hidden rounded-sm border border-[var(--line)] bg-[#eee6d7]">
+              <div className="relative flex aspect-[0.78] items-center justify-center overflow-hidden rounded-sm border border-[var(--line)] bg-[#eee6d7]">
                 <Image
                   src={book.imageUrl}
                   alt={`${book.title} book cover`}
@@ -104,16 +94,19 @@ export default function AllBooksPage() {
                 />
               </div>
               <div className="pt-4">
-                <p className="text-xs uppercase tracking-[0.14em] text-[var(--olive)]">
-                  {book.category}
-                </p>
                 <h2 className="mt-1 font-display text-xl leading-snug text-[var(--foreground)]">
                   {book.title}
                 </h2>
                 <p className="mt-1 text-sm text-[var(--ink-soft)]">{book.author}</p>
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--ink-soft)]">
-                  {book.description}
+                <p className="mt-2 text-xs uppercase tracking-[0.14em] text-[var(--olive)]">
+                  {book.category}
                 </p>
+                <Link
+                  href={`/books/${encodeURIComponent(book._id)}`}
+                  className="focus-ring mt-4 inline-flex min-h-10 items-center justify-center rounded-sm border border-[var(--accent)] px-4 text-sm font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--paper)]"
+                >
+                  View Details
+                </Link>
               </div>
             </article>
           ))}
