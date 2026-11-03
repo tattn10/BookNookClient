@@ -39,23 +39,12 @@ export default function AddBookForm() {
     const formEntries = Object.fromEntries(
       new FormData(form).entries(),
     );
-    const image = formEntries.bookImage;
-
-    if (!(image instanceof File) || image.size === 0) {
-      toast.error("Please choose a book image.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    const requestBody = new FormData();
-    for (const [key, value] of Object.entries(formEntries)) {
-      requestBody.append(key, value);
-    }
 
     try {
       const response = await fetch(`${serverUrl}/books`, {
         method: "POST",
-        body: requestBody,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formEntries),
       });
       const result = (await response.json()) as CreateBookResponse;
 
@@ -106,7 +95,6 @@ export default function AddBookForm() {
 
         <form
           onSubmit={handleSubmit}
-          encType="multipart/form-data"
           className="mt-8 flex flex-col gap-5"
         >
           <div>
@@ -162,20 +150,21 @@ export default function AddBookForm() {
           </div>
 
           <div>
-            <label htmlFor="bookImage" className="mb-2 block text-sm font-medium">
-              Book image
+            <label htmlFor="imageUrl" className="mb-2 block text-sm font-medium">
+              Book image URL
             </label>
             <input
-              id="bookImage"
-              name="bookImage"
-              type="file"
-              accept="image/*"
+              id="imageUrl"
+              name="imageUrl"
+              type="url"
               required
-              className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-[var(--accent)] file:px-3 file:py-2 file:text-sm file:text-[var(--paper)]"
-              aria-describedby="book-image-hint"
+              maxLength={2048}
+              className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-4 text-sm"
+              placeholder="https://example.com/book-cover.jpg"
+              aria-describedby="image-url-hint"
             />
-            <p id="book-image-hint" className="mt-2 text-xs text-[var(--ink-soft)]">
-              Choose an image up to 5 MB.
+            <p id="image-url-hint" className="mt-2 text-xs text-[var(--ink-soft)]">
+              Paste a direct link to the book cover image.
             </p>
           </div>
 

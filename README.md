@@ -29,9 +29,11 @@ The Next.js auth endpoint is available at `/api/auth/*`. Email/password login
 and registration use the shared Better Auth client.
 
 The add-book page requires a signed-in user and sends new books to the Express
-server. Set `NEXT_PUBLIC_SERVER_URL` to the server origin when it is not
-available at `http://localhost:8000`. Configure `MDB_URL` and `IMGBB_API_KEY`
-in the Server environment for MongoDB storage and ImgBB image uploads.
+server. Enter a direct HTTP(S) image URL for each book cover. Set
+`NEXT_PUBLIC_SERVER_URL` to the server origin when it is not available at
+`http://localhost:8000`. Configure `MDB_URL` in the Server environment for
+MongoDB storage. The server creates the `books` collection in the configured
+database, and the All Books page loads its entries from `GET /books`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
