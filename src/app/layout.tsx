@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
+import Footer from "../components/layout/footer/Footer";
 import Navbar from "../components/layout/navbar/Navbar";
 import "./globals.css";
 
@@ -8,25 +9,25 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "BookNook",
-  description: "Find your next favorite book at BookNook.",
+  title: {
+    default: "BookNook | A little bookshop for curious minds",
+    template: "%s | BookNook",
+  },
+  description:
+    "Discover well-loved classics and new treasures at the BookNook, your neighborhood bookshop online.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
