@@ -41,7 +41,7 @@ export default function MyBorrowsPage() {
     const controller = new AbortController();
     fetch(
       `${serverUrl}/borrows?userEmail=${encodeURIComponent(session.user.email)}`,
-      { signal: controller.signal },
+      { credentials: "include", signal: controller.signal },
     )
       .then(async (response) => {
         const result = (await response.json()) as BorrowRecord[] | ApiResponse;
@@ -86,7 +86,7 @@ export default function MyBorrowsPage() {
     try {
       const response = await fetch(
         `${serverUrl}/borrows/${encodeURIComponent(borrow._id)}?userEmail=${encodeURIComponent(session.user.email)}`,
-        { method: "DELETE" },
+        { method: "DELETE", credentials: "include" },
       );
       const result = (await response.json()) as ApiResponse;
 

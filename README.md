@@ -36,6 +36,8 @@ MongoDB storage. The server creates the `books` collection in the configured
 database, and the All Books page loads its entries from `GET /books`.
 Signed-in users can manage their own books at `/my-books`, borrow books from
 their details pages, and view or return them at `/my-borrows`.
+Set `FRONTEND_URL` in the Server environment to the frontend origin (default:
+`http://localhost:3000`) so the API can verify Better Auth sessions.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

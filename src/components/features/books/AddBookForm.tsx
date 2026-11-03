@@ -43,6 +43,7 @@ export default function AddBookForm() {
     try {
       const response = await fetch(`${serverUrl}/books`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formEntries),
       });

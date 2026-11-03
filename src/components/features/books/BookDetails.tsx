@@ -47,7 +47,7 @@ export default function BookDetails({ id }: { id: string }) {
       try {
         const response = await fetch(
           `${serverUrl}/books/${encodeURIComponent(id)}`,
-          { signal: controller.signal },
+          { credentials: "include", signal: controller.signal },
         );
         const result = (await response.json()) as BookResponse;
 
@@ -113,6 +113,7 @@ export default function BookDetails({ id }: { id: string }) {
     try {
       const response = await fetch(`${serverUrl}/borrows`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formEntries),
       });

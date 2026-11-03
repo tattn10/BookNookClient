@@ -45,7 +45,7 @@ export default function MyBooksPage() {
     const controller = new AbortController();
     fetch(
       `${serverUrl}/books?userEmail=${encodeURIComponent(session.user.email)}`,
-      { signal: controller.signal },
+      { credentials: "include", signal: controller.signal },
     )
       .then(async (response) => {
         const result = (await response.json()) as BookRecord[] | ApiResponse;
@@ -95,6 +95,7 @@ export default function MyBooksPage() {
         `${serverUrl}/books/${encodeURIComponent(editingBook._id)}`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...formEntries,
@@ -133,7 +134,7 @@ export default function MyBooksPage() {
     try {
       const response = await fetch(
         `${serverUrl}/books/${encodeURIComponent(deletingBook._id)}?userEmail=${encodeURIComponent(session.user.email)}`,
-        { method: "DELETE" },
+        { method: "DELETE", credentials: "include" },
       );
       const result = (await response.json()) as ApiResponse;
 
