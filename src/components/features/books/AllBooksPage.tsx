@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { BookRecord } from "./book-types";
 
 const serverUrl = (
@@ -72,9 +73,9 @@ export default function AllBooksPage() {
       </header>
 
       {isLoading ? (
-        <p role="status" className="py-12 text-center text-sm text-[var(--ink-soft)]">
-          Loading books…
-        </p>
+        <div className="py-12">
+          <LoadingSpinner label="Loading books…" />
+        </div>
       ) : books.length === 0 ? (
         <p className="py-12 text-center text-sm text-[var(--ink-soft)]">
           No books have been added yet.

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "react-toastify";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { authClient } from "@/lib/auth-client";
 
 const serverUrl = (
@@ -68,9 +69,9 @@ export default function AddBookForm() {
   if (isPending || !session) {
     return (
       <main className="flex flex-1 items-center justify-center px-5 py-20">
-        <p role="status" className="text-sm text-[var(--ink-soft)]">
-          {isPending ? "Checking your login…" : "Redirecting to login…"}
-        </p>
+        <LoadingSpinner
+          label={isPending ? "Checking your login…" : "Redirecting to login…"}
+        />
       </main>
     );
   }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "react-toastify";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { authClient } from "@/lib/auth-client";
 import type { BookRecord } from "./book-types";
 
@@ -159,13 +160,15 @@ export default function MyBooksPage() {
   if (isSessionPending || !session || isLoading) {
     return (
       <main className="flex flex-1 items-center justify-center px-5 py-20">
-        <p role="status" className="text-sm text-[var(--ink-soft)]">
-          {isSessionPending
-            ? "Checking your login…"
-            : !session
-              ? "Redirecting to login…"
-              : "Loading your books…"}
-        </p>
+        <LoadingSpinner
+          label={
+            isSessionPending
+              ? "Checking your login…"
+              : !session
+                ? "Redirecting to login…"
+                : "Loading your books…"
+          }
+        />
       </main>
     );
   }

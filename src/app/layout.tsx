@@ -13,8 +13,8 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "BookNook | A little bookshop for curious minds",
-    template: "%s | BookNook",
+    default: "BookNook | Home",
+    template: "BookNook | %s",
   },
   description:
     "Discover well-loved classics and new treasures at the BookNook, your neighborhood bookshop online.",
