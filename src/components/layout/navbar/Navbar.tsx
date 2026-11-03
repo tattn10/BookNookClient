@@ -40,27 +40,33 @@ export default function Navbar() {
         <div className="flex items-center gap-5 sm:gap-9">
           <Link
             href="/#new-arrivals"
-            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] sm:inline-flex"
+            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] md:inline-flex"
           >
             New arrivals
           </Link>
           <Link
             href="/#featured"
-            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] sm:inline-flex"
+            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] md:inline-flex"
           >
             The collection
           </Link>
           <Link
             href="/#about"
-            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] sm:inline-flex"
+            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] md:inline-flex"
           >
             Our story
           </Link>
           <Link
             href="/books"
-            className="focus-ring inline-flex min-h-10 items-center justify-center rounded-sm border border-[var(--accent)] px-4 text-sm font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--paper)] sm:px-5"
+            className="focus-ring hidden min-h-10 items-center justify-center rounded-sm border border-[var(--accent)] px-4 text-sm font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--paper)] md:inline-flex md:px-5"
           >
             Browse books
+          </Link>
+          <Link
+            href="/login"
+            className="focus-ring inline-flex min-h-10 items-center justify-center rounded-sm bg-[var(--accent)] px-4 text-sm font-medium text-[var(--paper)] transition-colors hover:bg-[var(--accent-dark)] sm:px-5"
+          >
+            Login
           </Link>
         </div>
       </nav>
