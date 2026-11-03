@@ -3,16 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("");
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -27,15 +26,16 @@ export default function LoginForm() {
       });
 
       if (result.error) {
-        setMessage(result.error.message ?? "Could not log in. Please try again.");
+        toast.error(result.error.message ?? "Could not log in. Please try again.");
         return;
       }
 
+      toast.success("You’re logged in. Welcome back!");
       router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Login failed:", error);
-      setMessage("Could not log in. Please try again.");
+      toast.error("Could not log in. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -96,10 +96,6 @@ export default function LoginForm() {
       >
         {isSubmitting ? "Logging in…" : "Login"}
       </button>
-
-      <p aria-live="polite" className="min-h-5 text-center text-sm text-[var(--ink-soft)]">
-        {message}
-      </p>
 
       <p className="text-center text-sm text-[var(--ink-soft)]">
         New to BookNook?{" "}

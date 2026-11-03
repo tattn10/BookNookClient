@@ -3,16 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("");
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -27,15 +26,16 @@ export default function RegisterForm() {
       });
 
       if (result.error) {
-        setMessage(result.error.message ?? "Could not register. Please try again.");
+        toast.error(result.error.message ?? "Could not register. Please try again.");
         return;
       }
 
+      toast.success("Your BookNook account is ready!");
       router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Registration failed:", error);
-      setMessage("Could not register. Please try again.");
+      toast.error("Could not register. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -129,13 +129,6 @@ export default function RegisterForm() {
       >
         {isSubmitting ? "Creating account…" : "Register"}
       </button>
-
-      <p
-        aria-live="polite"
-        className="min-h-5 text-center text-sm text-[var(--ink-soft)]"
-      >
-        {message}
-      </p>
 
       <p className="text-center text-sm text-[var(--ink-soft)]">
         Already have an account?{" "}
