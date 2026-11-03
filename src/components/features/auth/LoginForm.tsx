@@ -1,14 +1,44 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("Sign-in is not connected yet. Please check back soon.");
+    setMessage("");
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email"));
+    const password = String(formData.get("password"));
+
+    try {
+      const result = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: "/",
+      });
+
+      if (result.error) {
+        setMessage(result.error.message ?? "Could not log in. Please try again.");
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Login failed:", error);
+      setMessage("Could not log in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -61,9 +91,10 @@ export default function LoginForm() {
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="focus-ring mt-2 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-[var(--accent)] px-6 text-sm font-medium text-[var(--paper)] transition-colors hover:bg-[var(--accent-dark)]"
       >
-        Login
+        {isSubmitting ? "Logging in…" : "Login"}
       </button>
 
       <p aria-live="polite" className="min-h-5 text-center text-sm text-[var(--ink-soft)]">
