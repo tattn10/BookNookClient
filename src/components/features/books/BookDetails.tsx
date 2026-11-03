@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { authClient } from "@/lib/auth-client";
 import type { BookRecord } from "./book-types";
 
 const serverUrl = (
@@ -11,13 +13,32 @@ const serverUrl = (
 ).replace(/\/+$/, "");
 
 type BookResponse = BookRecord | { error?: string };
+type BorrowResponse = { error?: string; message?: string };
 
 export default function BookDetails({ id }: { id: string }) {
+  const router = useRouter();
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
   const [book, setBook] = useState<BookRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [isBorrowing, setIsBorrowing] = useState(false);
 
   useEffect(() => {
+    if (isSessionPending || session) {
+      return;
+    }
+
+    toast.info("Please log in to view book details.");
+    router.replace(
+      `/login?callbackUrl=${encodeURIComponent(`/books/${id}`)}`,
+    );
+  }, [id, isSessionPending, router, session]);
+
+  useEffect(() => {
+    if (isSessionPending || !session) {
+      return;
+    }
+
     const controller = new AbortController();
 
     async function fetchBook() {
@@ -62,13 +83,50 @@ export default function BookDetails({ id }: { id: string }) {
 
     void fetchBook();
     return () => controller.abort();
-  }, [id]);
+  }, [id, isSessionPending, session]);
 
-  if (isLoading) {
+  async function handleBorrow() {
+    if (!session || !book) {
+      toast.error("Please log in to borrow this book.");
+      return;
+    }
+
+    setIsBorrowing(true);
+    try {
+      const response = await fetch(`${serverUrl}/borrows`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookId: book._id,
+          userName: session.user.name,
+          userEmail: session.user.email,
+        }),
+      });
+      const result = (await response.json()) as BorrowResponse;
+
+      if (!response.ok) {
+        toast.error(result.error ?? "Could not borrow this book.");
+        return;
+      }
+
+      toast.success(result.message ?? "Book borrowed successfully.");
+    } catch (error) {
+      console.error("Borrowing a book failed:", error);
+      toast.error("Could not borrow this book. Please try again.");
+    } finally {
+      setIsBorrowing(false);
+    }
+  }
+
+  if (isSessionPending || !session || isLoading) {
     return (
       <main className="flex flex-1 items-center justify-center px-5 py-20">
         <p role="status" className="text-sm text-[var(--ink-soft)]">
-          Loading book details…
+          {isSessionPending
+            ? "Checking your login…"
+            : !session
+              ? "Redirecting to login…"
+              : "Loading book details…"}
         </p>
       </main>
     );
@@ -123,9 +181,18 @@ export default function BookDetails({ id }: { id: string }) {
           <p className="mt-8 whitespace-pre-wrap text-sm leading-7 text-[var(--foreground)]">
             {book.description}
           </p>
-          <p className="mt-8 border-t border-[var(--line)] pt-5 text-sm text-[var(--ink-soft)]">
-            Shared by {book.userName}
-          </p>
+          <div className="mt-8 border-t border-[var(--line)] pt-5 text-sm text-[var(--ink-soft)]">
+            <p>Added by {book.userName}</p>
+            <p className="mt-1">{book.userEmail}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleBorrow}
+            disabled={isBorrowing}
+            className="focus-ring mt-6 inline-flex min-h-12 items-center justify-center rounded-sm bg-[var(--accent)] px-6 text-sm font-medium text-[var(--paper)] transition-colors hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isBorrowing ? "Borrowing…" : "Borrow This Book"}
+          </button>
         </div>
       </article>
     </main>
