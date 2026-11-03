@@ -1,95 +1,51 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import BookCard from "./BookCard";
 
-type NewArrival = {
-  title: string;
-  author: string;
-  note?: string;
-  category?: string;
-};
-
-type ArrivalState =
-  | { status: "loading" }
-  | { status: "loaded"; books: NewArrival[] }
-  | { status: "error" };
-
-const coverStyles = [
-  "book-cover-olive",
-  "book-cover-rust",
-  "book-cover-navy",
-  "book-cover-plum",
-  "book-cover-gold",
-  "book-cover-umber",
+const newArrivals = [
+  {
+    title: "The Picture of Dorian Gray",
+    author: "Oscar Wilde",
+    note: "A new arrival",
+    category: "A classic",
+    cover: "book-cover-umber",
+  },
+  {
+    title: "Persuasion",
+    author: "Jane Austen",
+    note: "Fresh on the shelf",
+    category: "A novel",
+    cover: "book-cover-plum",
+  },
+  {
+    title: "The Railway Children",
+    author: "E. Nesbit",
+    note: "A story to share",
+    category: "A classic",
+    cover: "book-cover-rust",
+  },
+  {
+    title: "A Little Princess",
+    author: "Frances Hodgson Burnett",
+    note: "A reader favorite",
+    category: "A novel",
+    cover: "book-cover-olive",
+  },
+  {
+    title: "The Call of the Wild",
+    author: "Jack London",
+    note: "Ready for an adventure",
+    category: "A classic",
+    cover: "book-cover-navy",
+  },
+  {
+    title: "The Wonderful Wizard of Oz",
+    author: "L. Frank Baum",
+    note: "Follow the yellow brick road",
+    category: "A tale",
+    cover: "book-cover-gold",
+  },
 ];
 
-function isNewArrival(value: unknown): value is NewArrival {
-  if (typeof value !== "object" || value === null || !("title" in value) || !("author" in value)) {
-    return false;
-  }
-
-  return (
-    typeof value.title === "string" &&
-    typeof value.author === "string" &&
-    (!("note" in value) || typeof value.note === "string") &&
-    (!("category" in value) || typeof value.category === "string")
-  );
-}
-
 export default function NewArrivals() {
-  const [arrivalState, setArrivalState] = useState<ArrivalState>({
-    status: "loading",
-  });
-  const [retryCount, setRetryCount] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadNewArrivals() {
-      setArrivalState({ status: "loading" });
-
-      try {
-        const apiUrl = (
-          process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
-        ).replace(/\/$/, "");
-        const response = await fetch(`${apiUrl}/api/books/new-arrivals`, {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error(`New arrivals request failed (${response.status}).`);
-        }
-
-        const payload: unknown = await response.json();
-
-        if (
-          typeof payload !== "object" ||
-          payload === null ||
-          !("books" in payload) ||
-          !Array.isArray(payload.books) ||
-          !payload.books.every(isNewArrival)
-        ) {
-          throw new Error("The new arrivals response has an invalid format.");
-        }
-
-        setArrivalState({ status: "loaded", books: payload.books });
-      } catch (error) {
-        if (controller.signal.aborted) {
-          return;
-        }
-
-        console.error("Could not load new arrivals:", error);
-        setArrivalState({ status: "error" });
-      }
-    }
-
-    void loadNewArrivals();
-
-    return () => controller.abort();
-  }, [retryCount]);
-
   return (
     <section
       id="new-arrivals"
@@ -110,56 +66,15 @@ export default function NewArrivals() {
             </h2>
           </div>
           <p className="max-w-xs text-sm leading-6 text-[var(--ink-soft)]">
-            The six latest additions to our shelves.
+            A few fresh finds for your next quiet afternoon.
           </p>
         </div>
 
-        {arrivalState.status === "loading" && (
-          <p role="status" className="py-12 text-center text-[var(--ink-soft)]">
-            Gathering the latest books for you…
-          </p>
-        )}
-
-        {arrivalState.status === "error" && (
-          <div
-            role="alert"
-            className="flex flex-col items-center gap-4 py-10 text-center"
-          >
-            <p className="text-sm text-[var(--accent)]">
-              New arrivals are unavailable right now. Please check the server
-              connection and try again.
-            </p>
-            <button
-              type="button"
-              onClick={() => setRetryCount((count) => count + 1)}
-              className="focus-ring rounded-sm border border-[var(--accent)] px-4 py-2 text-sm text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--paper)]"
-            >
-              Try again
-            </button>
-          </div>
-        )}
-
-        {arrivalState.status === "loaded" &&
-          (arrivalState.books.length === 0 ? (
-            <p className="py-12 text-center text-[var(--ink-soft)]">
-              No new books have arrived just yet. Please check back soon.
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
-              {arrivalState.books.map((book, index) => (
-                <BookCard
-                  key={`${book.title}-${book.author}-${index}`}
-                  book={{
-                    title: book.title,
-                    author: book.author,
-                    note: book.note ?? "Just arrived on the shelf",
-                    category: book.category ?? "New arrival",
-                    cover: coverStyles[index % coverStyles.length],
-                  }}
-                />
-              ))}
-            </div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
+          {newArrivals.map((book) => (
+            <BookCard key={book.title} book={book} />
           ))}
+        </div>
       </div>
     </section>
   );
