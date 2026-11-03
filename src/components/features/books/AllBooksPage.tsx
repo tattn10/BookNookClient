@@ -7,9 +7,7 @@ import { toast } from "react-toastify";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { BookRecord } from "./book-types";
 
-const serverUrl = (
-  process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:8000"
-).replace(/\/+$/, "");
+const serverUrl = "/api/server";
 
 export default function AllBooksPage() {
   const [books, setBooks] = useState<BookRecord[]>([]);

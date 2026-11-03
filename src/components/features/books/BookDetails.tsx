@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { getBookApiAuthorization } from "@/lib/book-api-auth";
 import { authClient } from "@/lib/auth-client";
 import type { BookRecord } from "./book-types";
 
-const serverUrl = (
-  process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:8000"
-).replace(/\/+$/, "");
+const serverUrl = "/api/server";
 
 type BookResponse = BookRecord | { error?: string };
 type BorrowResponse = { error?: string; message?: string };
@@ -115,7 +114,10 @@ export default function BookDetails({ id }: { id: string }) {
       const response = await fetch(`${serverUrl}/borrows`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: await getBookApiAuthorization(),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formEntries),
       });
       const result = (await response.json()) as BorrowResponse;

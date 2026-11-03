@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { getBookApiAuthorization } from "@/lib/book-api-auth";
 import { authClient } from "@/lib/auth-client";
 import type { BorrowRecord } from "./book-types";
 
-const serverUrl = (
-  process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:8000"
-).replace(/\/+$/, "");
+const serverUrl = "/api/server";
 
 type ApiResponse = {
   error?: string;
@@ -87,7 +86,11 @@ export default function MyBorrowsPage() {
     try {
       const response = await fetch(
         `${serverUrl}/borrows/${encodeURIComponent(borrow._id)}?userEmail=${encodeURIComponent(session.user.email)}`,
-        { method: "DELETE", credentials: "include" },
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: { Authorization: await getBookApiAuthorization() },
+        },
       );
       const result = (await response.json()) as ApiResponse;
 

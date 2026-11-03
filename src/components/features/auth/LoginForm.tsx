@@ -120,20 +120,12 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <div className="mb-2 flex items-center justify-between gap-4">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-[var(--foreground)]"
-          >
-            Password
-          </label>
-          <Link
-            href="/forgot-password"
-            className="focus-ring rounded-sm text-sm text-[var(--accent)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--accent)]"
-          >
-            Forgot password?
-          </Link>
-        </div>
+        <label
+          htmlFor="password"
+          className="mb-2 block text-sm font-medium text-[var(--foreground)]"
+        >
+          Password
+        </label>
         <input
           id="password"
           name="password"

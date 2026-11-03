@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { jwt } from "better-auth/plugins";
 import { client } from "@/db";
 
 const secret = process.env.BETTER_AUTH_SECRET;
@@ -28,8 +29,28 @@ export const auth = betterAuth({
     client.db(process.env.MONGODB_DB ?? "booknook"),
     { client },
   ),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 7 * 24 * 60 * 60,
+      strategy: "jwt",
+    },
+  },
+  plugins: [
+    jwt({
+      sessionCookieCache: true,
+      jwt: {
+        expirationTime: "15m",
+        definePayload: ({ user }) => ({
+          email: user.email,
+          name: user.name,
+        }),
+      },
+    }),
+  ],
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: false,
   },
   ...(googleClientId && googleClientSecret
     ? {

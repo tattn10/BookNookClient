@@ -41,7 +41,12 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      autoComplete="off"
+      className="mt-8 flex flex-col gap-5"
+    >
       <div>
         <label
           htmlFor="name"
@@ -53,7 +58,7 @@ export default function RegisterForm() {
           id="name"
           name="name"
           type="text"
-          autoComplete="name"
+          autoComplete="off"
           required
           className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-4 text-sm text-[var(--foreground)]"
           placeholder="Your name"
@@ -71,7 +76,7 @@ export default function RegisterForm() {
           id="email"
           name="email"
           type="email"
-          autoComplete="email"
+          autoComplete="off"
           required
           className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-4 text-sm text-[var(--foreground)]"
           placeholder="you@example.com"
@@ -89,7 +94,7 @@ export default function RegisterForm() {
           id="photoUrl"
           name="photoUrl"
           type="url"
-          autoComplete="url"
+          autoComplete="off"
           required
           className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-4 text-sm text-[var(--foreground)]"
           placeholder="https://example.com/your-photo.jpg"
@@ -107,18 +112,10 @@ export default function RegisterForm() {
           id="password"
           name="password"
           type="password"
-          autoComplete="new-password"
-          minLength={8}
+          autoComplete="off"
           required
           className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-4 text-sm text-[var(--foreground)]"
-          aria-describedby="password-hint"
         />
-        <p
-          id="password-hint"
-          className="mt-2 text-xs text-[var(--ink-soft)]"
-        >
-          Use at least 8 characters.
-        </p>
       </div>
 
       <button
