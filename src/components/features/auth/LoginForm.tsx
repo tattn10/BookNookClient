@@ -69,6 +69,16 @@ export default function LoginForm() {
       <p aria-live="polite" className="min-h-5 text-center text-sm text-[var(--ink-soft)]">
         {message}
       </p>
+
+      <p className="text-center text-sm text-[var(--ink-soft)]">
+        New to BookNook?{" "}
+        <Link
+          href="/register"
+          className="focus-ring rounded-sm text-[var(--accent)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--accent)]"
+        >
+          Create an account
+        </Link>
+      </p>
     </form>
   );
 }
