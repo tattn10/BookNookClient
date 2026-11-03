@@ -34,6 +34,8 @@ server. Enter a direct HTTP(S) image URL for each book cover. Set
 `http://localhost:8000`. Configure `MDB_URL` in the Server environment for
 MongoDB storage. The server creates the `books` collection in the configured
 database, and the All Books page loads its entries from `GET /books`.
+Signed-in users can manage their own books at `/my-books`, borrow books from
+their details pages, and view or return them at `/my-borrows`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

@@ -128,6 +128,18 @@ export default function Navbar() {
                 >
                   Add a book
                 </Link>
+                <Link
+                  href="/my-books"
+                  className="focus-ring block rounded-sm px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--paper-dark)]"
+                >
+                  My books
+                </Link>
+                <Link
+                  href="/my-borrows"
+                  className="focus-ring block rounded-sm px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--paper-dark)]"
+                >
+                  My borrows
+                </Link>
                 <button
                   type="button"
                   onClick={handleSignOut}

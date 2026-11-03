@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 import type { BookRecord } from "./book-types";
@@ -22,6 +22,8 @@ export default function BookDetails({ id }: { id: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [isBorrowing, setIsBorrowing] = useState(false);
+  const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
+  const [returnDate, setReturnDate] = useState("");
 
   useEffect(() => {
     if (isSessionPending || session) {
@@ -85,22 +87,34 @@ export default function BookDetails({ id }: { id: string }) {
     return () => controller.abort();
   }, [id, isSessionPending, session]);
 
-  async function handleBorrow() {
+  function openBorrowModal() {
     if (!session || !book) {
       toast.error("Please log in to borrow this book.");
       return;
     }
 
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 14);
+    setReturnDate(toDateInputValue(defaultDate));
+    setIsBorrowModalOpen(true);
+  }
+
+  async function handleBorrow(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session || !book) {
+      toast.error("Please log in to borrow this book.");
+      return;
+    }
+
+    const formEntries = Object.fromEntries(
+      new FormData(event.currentTarget).entries(),
+    );
     setIsBorrowing(true);
     try {
       const response = await fetch(`${serverUrl}/borrows`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookId: book._id,
-          userName: session.user.name,
-          userEmail: session.user.email,
-        }),
+        body: JSON.stringify(formEntries),
       });
       const result = (await response.json()) as BorrowResponse;
 
@@ -110,6 +124,7 @@ export default function BookDetails({ id }: { id: string }) {
       }
 
       toast.success(result.message ?? "Book borrowed successfully.");
+      setIsBorrowModalOpen(false);
     } catch (error) {
       console.error("Borrowing a book failed:", error);
       toast.error("Could not borrow this book. Please try again.");
@@ -187,14 +202,106 @@ export default function BookDetails({ id }: { id: string }) {
           </div>
           <button
             type="button"
-            onClick={handleBorrow}
-            disabled={isBorrowing}
+            onClick={openBorrowModal}
             className="focus-ring mt-6 inline-flex min-h-12 items-center justify-center rounded-sm bg-[var(--accent)] px-6 text-sm font-medium text-[var(--paper)] transition-colors hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isBorrowing ? "Borrowing…" : "Borrow This Book"}
+            Borrow This Book
           </button>
         </div>
       </article>
+      {isBorrowModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/55 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !isBorrowing) {
+              setIsBorrowModalOpen(false);
+            }
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="borrow-book-heading"
+            className="my-auto max-h-[90vh] w-full max-w-xl overflow-y-auto border border-[var(--line)] bg-[var(--paper)] p-6 shadow-xl sm:p-8"
+          >
+            <h2 id="borrow-book-heading" className="font-display text-3xl">
+              Borrow this book
+            </h2>
+            <form onSubmit={handleBorrow} className="mt-6 grid gap-4">
+              <input type="hidden" name="bookId" value={book._id} />
+              <input type="hidden" name="bookImage" value={book.imageUrl} />
+              <input type="hidden" name="userEmail" value={session.user.email} />
+              <label className="grid gap-2 text-sm font-medium">
+                Book title
+                <input
+                  name="bookTitle"
+                  value={book.title}
+                  readOnly
+                  className="min-h-11 rounded-sm border border-[var(--line)] bg-[var(--paper-dark)] px-3 font-normal"
+                />
+              </label>
+              <label className="grid gap-2 text-sm font-medium">
+                User email
+                <input
+                  value={session.user.email}
+                  readOnly
+                  className="min-h-11 rounded-sm border border-[var(--line)] bg-[var(--paper-dark)] px-3 font-normal"
+                />
+              </label>
+              <label className="grid gap-2 text-sm font-medium">
+                Borrow date
+                <input
+                  name="borrowDate"
+                  type="date"
+                  value={toDateInputValue(new Date())}
+                  readOnly
+                  className="min-h-11 rounded-sm border border-[var(--line)] bg-[var(--paper-dark)] px-3 font-normal"
+                />
+              </label>
+              <label className="grid gap-2 text-sm font-medium">
+                Return date
+                <input
+                  name="returnDate"
+                  type="date"
+                  required
+                  min={getDateOffset(1)}
+                  value={returnDate}
+                  onChange={(event) => setReturnDate(event.target.value)}
+                  className="focus-ring min-h-11 rounded-sm border border-[var(--line)] bg-[var(--paper)] px-3 font-normal"
+                />
+              </label>
+              <div className="mt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  disabled={isBorrowing}
+                  onClick={() => setIsBorrowModalOpen(false)}
+                  className="focus-ring min-h-10 rounded-sm border border-[var(--line)] px-4 text-sm hover:bg-[var(--paper-dark)] disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isBorrowing}
+                  className="focus-ring min-h-10 rounded-sm bg-[var(--accent)] px-5 text-sm font-medium text-[var(--paper)] hover:bg-[var(--accent-dark)] disabled:opacity-60"
+                >
+                  {isBorrowing ? "Borrowing…" : "Confirm borrow"}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
     </main>
   );
+}
+
+function toDateInputValue(date: Date) {
+  const timezoneOffset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 10);
+}
+
+function getDateOffset(offset: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return toDateInputValue(date);
 }
