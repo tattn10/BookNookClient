@@ -22,7 +22,7 @@ export default function RegisterForm() {
         email: String(formData.get("email")),
         password: String(formData.get("password")),
         image: String(formData.get("photoUrl")),
-        callbackURL: "/",
+        callbackURL: "/login",
       });
 
       if (result.error) {
@@ -30,9 +30,8 @@ export default function RegisterForm() {
         return;
       }
 
-      toast.success("Your BookNook account is ready!");
-      router.push("/");
-      router.refresh();
+      toast.success("Your account is ready. Please log in.");
+      router.push("/login");
     } catch (error) {
       console.error("Registration failed:", error);
       toast.error("Could not register. Please try again.");

@@ -16,6 +16,8 @@ const trustedOrigins = [
   appUrl,
   process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
 ].filter((origin): origin is string => Boolean(origin));
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 export const auth = betterAuth({
   appName: "BookNook",
@@ -29,4 +31,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  ...(googleClientId && googleClientSecret
+    ? {
+        socialProviders: {
+          google: {
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+          },
+        },
+      }
+    : {}),
 });
