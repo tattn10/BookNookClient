@@ -6,21 +6,49 @@ import { useState, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 
+function getPasswordError(password: string) {
+  const errors = [];
+
+  if (password.length < 6) {
+    errors.push("at least 6 characters");
+  }
+  if (!/[A-Z]/.test(password)) {
+    errors.push("an uppercase letter");
+  }
+  if (!/[a-z]/.test(password)) {
+    errors.push("a lowercase letter");
+  }
+
+  return errors.length
+    ? `Password must include ${errors.join(", ").replace(/, ([^,]*)$/, " and $1")}.`
+    : "";
+}
+
 export default function RegisterForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitting(true);
-
     const formData = new FormData(event.currentTarget);
+    const enteredPassword = String(formData.get("password"));
+    const validationError = getPasswordError(enteredPassword);
+
+    if (validationError) {
+      setPasswordError(validationError);
+      return;
+    }
+
+    setPasswordError("");
+    setIsSubmitting(true);
 
     try {
       const result = await authClient.signUp.email({
         name: String(formData.get("name")),
         email: String(formData.get("email")),
-        password: String(formData.get("password")),
+        password: enteredPassword,
         image: String(formData.get("photoUrl")),
         callbackURL: "/login",
       });
@@ -113,9 +141,28 @@ export default function RegisterForm() {
           name="password"
           type="password"
           autoComplete="off"
+          value={password}
+          onChange={(event) => {
+            const value = event.currentTarget.value;
+            setPassword(value);
+            if (passwordError) {
+              setPasswordError(getPasswordError(value));
+            }
+          }}
           required
+          aria-invalid={Boolean(passwordError)}
+          aria-describedby={passwordError ? "password-error" : undefined}
           className="focus-ring min-h-12 w-full rounded-sm border border-[var(--line)] bg-[var(--paper)] px-4 text-sm text-[var(--foreground)]"
         />
+        {passwordError && (
+          <p
+            id="password-error"
+            role="alert"
+            className="mt-2 text-sm text-red-700"
+          >
+            {passwordError}
+          </p>
+        )}
       </div>
 
       <button

@@ -51,6 +51,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    minPasswordLength: 6,
   },
   ...(googleClientId && googleClientSecret
     ? {
