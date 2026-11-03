@@ -39,6 +39,12 @@ export default function Navbar() {
 
         <div className="flex items-center gap-5 sm:gap-9">
           <Link
+            href="/#new-arrivals"
+            className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] sm:inline-flex"
+          >
+            New arrivals
+          </Link>
+          <Link
             href="/#featured"
             className="focus-ring hidden rounded-sm text-sm font-medium tracking-wide text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)] sm:inline-flex"
           >

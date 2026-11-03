@@ -1,11 +1,19 @@
 import { books } from "../books/books";
 import BookCard from "./BookCard";
 import HomeBanner from "./HomeBanner";
+import NewArrivals from "./NewArrivals";
+import BrowseByMood from "./sections/BrowseByMood";
+import ReadingRitual from "./sections/ReadingRitual";
 
 export default function HomePage() {
   return (
     <main>
       <HomeBanner />
+      <NewArrivals />
+
+      <BrowseByMood />
+
+      <ReadingRitual />
 
       <section
         id="featured"
